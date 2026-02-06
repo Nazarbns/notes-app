@@ -1,0 +1,120 @@
+/* Reset podstawowy */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Styl globalny */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f4f6f8;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+header {
+  background-color: #1f2933;
+  color: #ffffff;
+  padding: 1rem;
+}
+
+header h1 {
+  margin-bottom: 0.5rem;
+}
+
+/* Nawigacja */
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+
+nav a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Główna zawartość */
+main {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+section {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  max-width: 600px;
+  width: 100%;
+  border-radius: 6px;
+}
+
+/* Formularze */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+input {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+/* Przyciski */
+button {
+  padding: 0.6rem;
+  background-color: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1d4ed8;
+}
+
+/* Lista notatek */
+#notesList {
+  margin: 1rem 0;
+}
+
+#notesList li {
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Stopka */
+footer {
+  background-color: #e5e7eb;
+  text-align: center;
+  padding: 0.8rem;
+  font-size: 0.9rem;
+}
+
+/* Responsywność */
+@media (max-width: 600px) {
+  nav ul {
+    flex-direction: column;
+  }
+
+  section {
+    padding: 1rem;
+  }
+}
