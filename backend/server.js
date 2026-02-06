@@ -1,35 +1,42 @@
-const express = require("express");
-const app = express();
-const PORT = 3000;
+const loginForm = document.getElementById("loginForm");
 
-// Middleware
-app.use(express.json());
+if (loginForm) {
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-// Test endpoint
-app.get("/", (req, res) => {
-  res.json({ message: "API działa poprawnie" });
-});
+    const email = loginForm.querySelector("input[type='email']").value;
+    const password = loginForm.querySelector("input[type='password']").value;
 
-// API – notatki
-app.get("/api/notes", (req, res) => {
-  const notes = [
-    { id: 1, content: "Przykładowa notatka z backendu" }
-  ];
-  res.json(notes);
-});
+    if (!email || !password) {
+      alert("Proszę wypełnić wszystkie pola.");
+      return;
+    }
 
-// Start serwera
-app.listen(PORT, () => {
-  console.log(`Serwer uruchomiony na porcie ${PORT}`);
-});
-// Pobieranie notatek z backendu
-async function loadNotesFromApi() {
+    alert("Logowanie zakończone sukcesem.");
+    window.location.href = "dashboard.html";
+  });
+}
+
+const notesList = document.getElementById("notesList");
+const addNoteButton = document.querySelector("button");
+
+if (addNoteButton && notesList) {
+  addNoteButton.addEventListener("click", () => {
+    const text = prompt("Wpisz treść notatki:");
+    if (!text) return;
+
+    const li = document.createElement("li");
+    li.textContent = text;
+    notesList.appendChild(li);
+  });
+}
+
+async function loadNotes() {
   try {
     const response = await fetch("http://localhost:3000/api/notes");
     const notes = await response.json();
 
     if (!notesList) return;
-
     notesList.innerHTML = "";
 
     notes.forEach(note => {
@@ -37,11 +44,11 @@ async function loadNotesFromApi() {
       li.textContent = note.content;
       notesList.appendChild(li);
     });
-  } catch (error) {
-    console.error("Błąd podczas pobierania notatek:", error);
+  } catch (err) {
+    console.error("Błąd pobierania notatek", err);
   }
 }
 
 if (notesList) {
-  loadNotesFromApi();
+  loadNotes();
 }
