@@ -2,36 +2,37 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel użytkownika – AI Notes</title>
+  <title>Dashboard</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <header>
-    <h1>Panel użytkownika</h1>
-    <nav>
-      <a href="index.html">Strona główna</a>
-      <a href="login.html">Wyloguj</a>
-    </nav>
-  </header>
+<header>
+  <nav>
+    <div class="logo">NotesApp</div>
+    <div class="menu">
+      <a href="#" id="logoutBtn">Logout</a>
+    </div>
+  </nav>
+</header>
 
-  <main>
-    <section>
-      <h2>Twoje notatki</h2>
+<main>
+  <div class="container">
+    <h2>Twoje notatki</h2>
 
-      <ul id="notesList">
-        <li>Przykładowa notatka</li>
-      </ul>
+    <div class="note-form">
+      <input
+        type="text"
+        id="noteInput"
+        placeholder="Wpisz nową notatkę"
+      />
+      <button id="addNoteBtn">Dodaj</button>
+    </div>
 
-      <button>Dodaj notatkę</button>
-    </section>
-  </main>
+    <ul id="notesList"></ul>
+  </div>
+</main>
 
-  <footer>
-    <p>© 2026 AI Notes</p>
-  </footer>
 <script src="js/main.js"></script>
-
 </body>
 </html>

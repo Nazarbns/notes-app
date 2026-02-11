@@ -2,86 +2,73 @@ const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
 
 const app = express();
 const PORT = 3000;
-const JWT_SECRET = "tajny_klucz_jwt";
+const JWT_SECRET = "jwt_secret_key";
 
 app.use(express.json());
+app.use(cors());
 
-// ===== BAZA DANYCH =====
 const db = new sqlite3.Database("./database.db");
 
-// Tabela notatek
-db.run(`
-  CREATE TABLE IF NOT EXISTS notes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    content TEXT NOT NULL
-  )
-`);
+// ===== DATABASE =====
+db.serialize(() => {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL
+    )
+  `);
 
-// Tabela użytkowników
-db.run(`
-  CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    role TEXT NOT NULL
-  )
-`);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS notes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      content TEXT NOT NULL,
+      user_id INTEGER NOT NULL
+    )
+  `);
+});
 
-// ===== MIDDLEWARE JWT =====
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token) {
-    res.sendStatus(401);
-    return;
+// ===== AUTH MIDDLEWARE =====
+function authenticate(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: "Brak tokenu" });
   }
+
+  const token = authHeader.split(" ")[1];
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
-      res.sendStatus(403);
-      return;
+      return res.status(403).json({ error: "Nieprawidłowy token" });
     }
-    req.user = user;
+    req.user = user; // { id }
     next();
   });
 }
 
-// ===== TEST ENDPOINT =====
-app.get("/", (req, res) => {
-  res.json({ message: "API działa poprawnie" });
-});
-
-// ===== AUTH =====
-
-// Rejestracja
+// ===== REGISTER =====
 app.post("/api/register", async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    res.status(400).json({ error: "Brak danych" });
-    return;
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashed = await bcrypt.hash(password, 10);
 
   db.run(
-    "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
-    [email, hashedPassword, "user"],
-    function (err) {
+    "INSERT INTO users (email, password) VALUES (?, ?)",
+    [email, hashed],
+    err => {
       if (err) {
-        res.status(400).json({ error: "Użytkownik już istnieje" });
-        return;
+        return res.status(400).json({ error: "Użytkownik już istnieje" });
       }
-      res.json({ message: "Rejestracja zakończona sukcesem" });
+      res.json({ message: "OK" });
     }
   );
 });
 
-// Logowanie
+// ===== LOGIN =====
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
 
@@ -90,73 +77,44 @@ app.post("/api/login", (req, res) => {
     [email],
     async (err, user) => {
       if (!user) {
-        res.status(401).json({ error: "Nieprawidłowe dane" });
-        return;
+        return res.status(401).json({ error: "Nieprawidłowe dane" });
       }
 
-      const isValid = await bcrypt.compare(password, user.password);
-      if (!isValid) {
-        res.status(401).json({ error: "Nieprawidłowe dane" });
-        return;
+      const valid = await bcrypt.compare(password, user.password);
+      if (!valid) {
+        return res.status(401).json({ error: "Nieprawidłowe dane" });
       }
 
-      const token = jwt.sign(
-        { id: user.id, role: user.role },
-        JWT_SECRET,
-        { expiresIn: "1h" }
-      );
-
+      const token = jwt.sign({ id: user.id }, JWT_SECRET);
       res.json({ token });
     }
   );
 });
 
-// ===== NOTATKI (CRUD) =====
-
-// GET – pobierz notatki (chronione)
-app.get("/api/notes", authenticateToken, (req, res) => {
-  db.all("SELECT * FROM notes", [], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json(rows);
-  });
-});
-
-// POST – dodaj notatkę
-app.post("/api/notes", authenticateToken, (req, res) => {
-  const { content } = req.body;
-
-  if (!content) {
-    res.status(400).json({ error: "Brak treści notatki" });
-    return;
-  }
-
-  db.run(
-    "INSERT INTO notes (content) VALUES (?)",
-    [content],
-    function (err) {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      res.json({ id: this.lastID, content });
+// ===== GET NOTES (TYLKO SWOJE) =====
+app.get("/api/notes", authenticate, (req, res) => {
+  db.all(
+    "SELECT id, content FROM notes WHERE user_id = ?",
+    [req.user.id],
+    (err, rows) => {
+      res.json(rows);
     }
   );
 });
 
-// DELETE – usuń notatkę
-app.delete("/api/notes/:id", authenticateToken, (req, res) => {
-  const id = req.params.id;
+// ===== ADD NOTE (DO SWOJEGO USERA) =====
+app.post("/api/notes", authenticate, (req, res) => {
+  const { content } = req.body;
 
-  db.run("DELETE FROM notes WHERE id = ?", [id], function (err) {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({ deleted: this.changes });
-  });
+  if (!content) {
+    return res.status(400).json({ error: "Pusta notatka" });
+  }
+
+  db.run(
+    "INSERT INTO notes (content, user_id) VALUES (?, ?)",
+    [content, req.user.id],
+    () => res.json({ success: true })
+  );
 });
 
 // ===== START =====
