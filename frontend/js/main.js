@@ -1,11 +1,10 @@
 const API_URL = "http://localhost:3000";
 
-// ===== UTILS =====
 function getToken() {
   return localStorage.getItem("token");
 }
 
-// ===== REGISTER =====
+/* ================= REGISTER ================= */
 const registerForm = document.getElementById("registerForm");
 
 if (registerForm) {
@@ -32,8 +31,7 @@ if (registerForm) {
   });
 }
 
-
-// ===== LOGIN =====
+/* ================= LOGIN ================= */
 const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
@@ -61,14 +59,13 @@ if (loginForm) {
   });
 }
 
-// ===== DASHBOARD PROTECTION =====
+/* ================= DASHBOARD ================= */
 const notesList = document.getElementById("notesList");
 
 if (notesList && !getToken()) {
   window.location.href = "login.html";
 }
 
-// ===== LOAD NOTES =====
 async function loadNotes() {
   const res = await fetch(`${API_URL}/api/notes`, {
     headers: {
@@ -91,12 +88,69 @@ async function loadNotes() {
 
   notes.forEach(note => {
     const li = document.createElement("li");
-    li.textContent = note.content;
+
+    const textSpan = document.createElement("span");
+    textSpan.textContent = note.content;
+    textSpan.style.marginRight = "10px";
+
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "Edytuj";
+    editBtn.style.marginRight = "6px";
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Usuń";
+
+    /* ===== DELETE ===== */
+    deleteBtn.addEventListener("click", async () => {
+      await fetch(`${API_URL}/api/notes/${note.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${getToken()}`
+        }
+      });
+
+      loadNotes();
+    });
+
+    /* ===== UPDATE ===== */
+    editBtn.addEventListener("click", () => {
+      const input = document.createElement("input");
+      input.value = note.content;
+      input.style.marginRight = "6px";
+
+      const saveBtn = document.createElement("button");
+      saveBtn.textContent = "Zapisz";
+
+      li.innerHTML = "";
+      li.appendChild(input);
+      li.appendChild(saveBtn);
+
+      saveBtn.addEventListener("click", async () => {
+        const newContent = input.value.trim();
+        if (!newContent) return;
+
+        await fetch(`${API_URL}/api/notes/${note.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`
+          },
+          body: JSON.stringify({ content: newContent })
+        });
+
+        loadNotes();
+      });
+    });
+
+    li.appendChild(textSpan);
+    li.appendChild(editBtn);
+    li.appendChild(deleteBtn);
+
     notesList.appendChild(li);
   });
 }
 
-// ===== ADD NOTE =====
+/* ================= ADD NOTE ================= */
 const addNoteBtn = document.getElementById("addNoteBtn");
 const noteInput = document.getElementById("noteInput");
 
@@ -130,7 +184,7 @@ if (addNoteBtn && noteInput && notesList) {
   loadNotes();
 }
 
-// ===== LOGOUT =====
+/* ================= LOGOUT ================= */
 const logoutBtn = document.getElementById("logoutBtn");
 
 if (logoutBtn) {

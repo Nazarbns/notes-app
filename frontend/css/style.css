@@ -1,18 +1,25 @@
+/* ===== RESET ===== */
 * {
   box-sizing: border-box;
-  font-family: "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
 body {
-  margin: 0;
-  background: #f1f5f9;
-  color: #1f2937;
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #1e3a8a, #0f172a 60%);
+  display: flex;
+  flex-direction: column;
+  color: #111827;
 }
 
 /* ===== HEADER ===== */
 header {
-  background: #0f172a;
-  padding: 16px 32px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding: 20px 50px;
 }
 
 nav {
@@ -23,83 +30,134 @@ nav {
 
 .logo {
   color: #ffffff;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 600;
+  letter-spacing: 1px;
 }
 
 .menu a {
-  color: #ffffff;
+  color: #e2e8f0;
   text-decoration: none;
-  margin-left: 20px;
+  margin-left: 30px;
   font-size: 14px;
+  transition: 0.3s;
+  position: relative;
+}
+
+.menu a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background: #6366f1;
+  left: 0;
+  bottom: -4px;
+  transition: 0.3s;
+}
+
+.menu a:hover::after {
+  width: 100%;
 }
 
 .menu a:hover {
-  text-decoration: underline;
+  color: #ffffff;
 }
 
 /* ===== MAIN ===== */
 main {
+  flex: 1;
   display: flex;
   justify-content: center;
-  padding: 40px 20px;
+  align-items: center;
+  padding: 60px 20px;
 }
 
+/* ===== CARD ===== */
 .container {
-  background: #ffffff;
   width: 100%;
-  max-width: 480px;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  max-width: 520px;
+  padding: 45px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.35);
+  backdrop-filter: blur(15px);
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 h2 {
-  margin-top: 0;
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 35px;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: 0.5px;
 }
 
 /* ===== FORMS ===== */
 form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
 
 input {
-  padding: 12px;
+  padding: 14px 16px;
   font-size: 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border: none;
+  border-bottom: 2px solid #cbd5e1;
+  border-radius: 6px 6px 0 0;
+  background: rgba(255,255,255,0.8);
+  transition: 0.3s ease;
+}
+
+input::placeholder {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+input:hover {
+  border-bottom-color: #6366f1;
 }
 
 input:focus {
   outline: none;
-  border-color: #2563eb;
+  border-bottom-color: #4338ca;
+  box-shadow: 0 4px 12px rgba(67,56,202,0.2);
+  background: #ffffff;
 }
+
 
 /* ===== BUTTONS ===== */
 button {
-  padding: 12px;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
   font-size: 14px;
   font-weight: 600;
   color: #ffffff;
-  background: #2563eb;
-  border: none;
-  border-radius: 6px;
+  background: linear-gradient(135deg, #6366f1, #4338ca);
   cursor: pointer;
+  transition: 0.3s ease;
 }
 
 button:hover {
-  background: #1d4ed8;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(67,56,202,0.4);
+}
+
+button:active {
+  transform: translateY(0);
 }
 
 /* ===== NOTES ===== */
 .note-form {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 25px;
 }
 
 .note-form input {
@@ -108,14 +166,52 @@ button:hover {
 
 ul {
   list-style: none;
-  padding: 0;
-  margin: 0;
 }
 
 li {
-  background: #f8fafc;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #e5e7eb;
-  margin-bottom: 8px;
+  padding: 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+  margin-bottom: 14px;
+  border: 1px solid #c7d2fe;
+  transition: 0.3s ease;
+}
+
+li:hover {
+  transform: translateX(6px);
+  box-shadow: 0 8px 18px rgba(99,102,241,0.25);
+}
+
+/* ===== FOOTER ===== */
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+/* ===== RESPONSYWNOŚĆ ===== */
+@media (max-width: 600px) {
+
+  header {
+    padding: 18px 20px;
+  }
+
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .container {
+    padding: 30px;
+  }
+
+  .note-form {
+    flex-direction: column;
+  }
+
+  button {
+    width: 100%;
+  }
 }
