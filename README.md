@@ -19,13 +19,13 @@ https://notes-app-6p5k.onrender.com
 
 ---
 
-## Instalacja
+## Instalacja lokalna
 
 1. Sklonuj repozytorium:
 
-git clone https://github.com/TWOJ_LOGIN/notes-app.git
+git clone https://github.com/nazarbns/notes-app.git
 
-2. Przejdź do folderu backend:
+2. Przejdź do folderu projektu:
 
 cd notes-app/backend
 
@@ -35,17 +35,16 @@ npm install
 
 ---
 
-## Uruchomienie
+## Uruchomienie lokalne
 
-W folderze backend:
+W folderze `backend` uruchom:
 
 node server.js
 
-Serwer uruchomi się pod adresem:  
+Serwer będzie dostępny pod adresem:
+
 http://localhost:3000
 
-Frontend uruchom przez otwarcie pliku:
+Frontend uruchom poprzez otwarcie pliku:
 
 frontend/login.html
-
-w przeglądarce lub przez Live Server.
