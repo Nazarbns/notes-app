@@ -2,6 +2,11 @@
 
 Aplikacja webowa umożliwiająca rejestrację użytkowników, logowanie oraz zarządzanie własnymi notatkami (CRUD).
 
+Backend oparty na Node.js + Express + SQLite.
+Autentykacja realizowana przy użyciu JWT.
+
+---
+
 ## Wersja online
 
 Frontend:  
@@ -25,7 +30,7 @@ https://notes-app-6p5k.onrender.com
 
 git clone https://github.com/nazarbns/notes-app.git
 
-2. Przejdź do folderu projektu:
+2. Przejdź do folderu backend:
 
 cd notes-app/backend
 
@@ -47,4 +52,4 @@ http://localhost:3000
 
 Frontend uruchom poprzez otwarcie pliku:
 
-frontend/login.html
+frontend/login.html w przeglądarce.
